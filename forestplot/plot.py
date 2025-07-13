@@ -536,5 +536,6 @@ def _make_forestplot(
                 ax=ax,
             )
     negative_padding = 0.5
-    ax.set_ylim(-0.5, ax.get_ylim()[1] - negative_padding)
+    # ax.set_ylim(-0.5, ax.get_ylim()[1] - negative_padding) # this doesn't reflect the number of actually required rows
+    ax.set_ylim(-0.5, dataframe.shape[0]) # 250713: added by Takua Liu
     return ax
