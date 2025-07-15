@@ -88,15 +88,16 @@ def draw_est_markers(
     markersize = kwargs.get("markersize", 40)
     markercolor = kwargs.get("markercolor", "darkslategray")
     markeralpha = kwargs.get("markeralpha", 0.8)
-    ax.scatter(
-        y=yticklabel,
-        x=estimate,
-        data=dataframe,
-        marker=marker,
-        s=markersize,
-        color=markercolor,
-        alpha=markeralpha,
-    )
+    if not pd.isnull(dataframe[estimate]).all():
+        ax.scatter(
+            y=yticklabel,
+            x=estimate,
+            data=dataframe,
+            marker=marker,
+            s=markersize,
+            color=markercolor,
+            alpha=markeralpha,
+        )
     return ax
 
 
@@ -587,7 +588,13 @@ def format_xticks(
     else:
         xlowerlimit = 1.1 * dataframe[estimate].min()
         xupperlimit = 1.1 * dataframe[estimate].max()
-    ax.set_xlim(xlowerlimit, xupperlimit)
+
+    # 250714: handle the studies with unestimable CI
+    if not pd.isnull(xlowerlimit) and not pd.isnull(xupperlimit):
+        ax.set_xlim(xlowerlimit, xupperlimit)
+    else:
+        ax.set_xlim(-1, 1)
+    
     if xticks is not None:
         ax.set_xticks(xticks)
         ax.xaxis.set_tick_params(labelsize=xtick_size)
