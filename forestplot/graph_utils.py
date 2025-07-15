@@ -88,6 +88,8 @@ def draw_est_markers(
     markersize = kwargs.get("markersize", 40)
     markercolor = kwargs.get("markercolor", "darkslategray")
     markeralpha = kwargs.get("markeralpha", 0.8)
+    
+    # 250714: some dataframes are empty. In such cases, we still draw an empty graph. But of course we don't need markers on an empty graph!
     if not pd.isnull(dataframe[estimate]).all():
         ax.scatter(
             y=yticklabel,
