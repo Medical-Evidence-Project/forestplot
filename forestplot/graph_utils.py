@@ -5,6 +5,7 @@ from typing import Any, List, Optional, Sequence, Tuple, Union
 
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 from matplotlib.pyplot import Axes
 
 warnings.filterwarnings("ignore")
@@ -62,7 +63,7 @@ def draw_ci(
 
 
 def draw_est_markers(
-    dataframe: pd.core.frame.DataFrame, estimate: str, yticklabel: str, ax: Axes, **kwargs: Any
+    dataframe: pd.core.frame.DataFrame, estimate: str, yticklabel: str, proportional_size: bool, ax: Axes, **kwargs: Any
 ) -> Axes:
     """
     Draws the markers of the estimates using the Matplotlib plt.scatter API.
@@ -79,15 +80,27 @@ def draw_est_markers(
             Name of column in intermediate dataframe containing the formatted yticklabels.
     ax (Matplotlib Axes)
             Axes to operate on.
+    proportional_size (bool)
+            If true, specify marker size to be proportional to the weight of the study.
 
     Returns
     -------
             Matplotlib Axes object.
     """
     marker = kwargs.get("marker", "s")
-    markersize = kwargs.get("markersize", 40)
+    # markersize = kwargs.get("markersize", 40)
     markercolor = kwargs.get("markercolor", "darkslategray")
     markeralpha = kwargs.get("markeralpha", 0.8)
+    
+    # 250715: draw marker sizes proportionally to study weights
+    if proportional_size:
+        if not pd.isnull(dataframe[estimate]).all():
+            dataframe["markersize"] = np.power(2+0.125*dataframe["Weight"],2)
+            markersize = "markersize"
+    if not proportional_size:
+        markersize = kwargs.get("markersize", 40)
+        
+        
     
     # 250714: some dataframes are empty. In such cases, we still draw an empty graph. But of course we don't need markers on an empty graph!
     if not pd.isnull(dataframe[estimate]).all():

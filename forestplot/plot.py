@@ -401,7 +401,8 @@ def _make_forestplot(
     ax: Axes,
     despine: bool = True,
     table: bool = False,
-    **kwargs: Any,
+    proportional_marker_size: bool=False,
+    **kwargs: Any
 ) -> Axes:
     """
     Create and draw a forest plot using the given DataFrame and specified parameters.
@@ -451,6 +452,8 @@ def _make_forestplot(
         Whether to remove the top and right spines of the plot.
     table : bool, default=False
         Whether to draw a table-like structure on the plot.
+    proportional_marker_size: bool, default=False
+        Whether to draw the marker size proportionally to the weight of the study.
     **kwargs : Any
         Additional keyword arguments for further customization.
 
@@ -471,8 +474,9 @@ def _make_forestplot(
         ax=ax,
         **kwargs,
     )
+    # 250715: draw marker sizes proportionally to study weights
     draw_est_markers(
-        dataframe=dataframe, estimate=estimate, yticklabel=yticklabel, ax=ax, **kwargs
+        dataframe=dataframe, estimate=estimate, yticklabel=yticklabel, ax=ax, proportional_size=proportional_marker_size, **kwargs
     )
     format_xticks(
         dataframe=dataframe, estimate=estimate, ll=ll, hl=hl, xticks=xticks, ax=ax, **kwargs
