@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from matplotlib.pyplot import Axes
+from matplotlib.patches import Polygon
 
 warnings.filterwarnings("ignore")
 
@@ -61,6 +62,9 @@ def draw_ci(
         ax.set_xscale("log", base=10)
     return ax
 
+# Utility function, determine marker size.
+def determine_marker_size(weight):
+    return np.power(2+0.125*weight,2)
 
 def draw_est_markers(
     dataframe: pd.core.frame.DataFrame, estimate: str, yticklabel: str, proportional_size: bool, ax: Axes, **kwargs: Any
@@ -95,13 +99,12 @@ def draw_est_markers(
     # 250715: draw marker sizes proportionally to study weights
     if proportional_size:
         if not pd.isnull(dataframe[estimate]).all():
-            dataframe["markersize"] = np.power(2+0.125*dataframe["Weight"],2)
+            dataframe["markersize"] = determine_marker_size(dataframe["Weight"])
             markersize = "markersize"
     if not proportional_size:
         markersize = kwargs.get("markersize", 40)
         
         
-    
     # 250714: some dataframes are empty. In such cases, we still draw an empty graph. But of course we don't need markers on an empty graph!
     if not pd.isnull(dataframe[estimate]).all():
         ax.scatter(
@@ -115,6 +118,30 @@ def draw_est_markers(
         )
     return ax
 
+def draw_total_diamond(
+    dataframe: pd.core.frame.DataFrame,
+    total_col: str, 
+    estimate: str,
+    ll: str,
+    hl: str,
+    ax: Axes, 
+    **kwargs: Any
+) -> Axes:
+    height = 0.8 # total height of the diamond from top to bottom
+    print(height)
+    for ii,row in dataframe.iterrows():
+        if row[total_col]==1:
+            print(f"Row {ii} is total!")
+            ci_low = row[ll]
+            ci_high = row[hl]
+            val = row[estimate]
+            diamond = Polygon(
+                # left, top, right, bottom
+                [(ci_low, ii), (val, ii+height/2), (ci_high, ii), (val, ii-height/2)],
+                closed = True, facecolor="black", zorder=10
+                )
+            ax.add_patch(diamond)
+    return ax
 
 def draw_ref_xline(
     ax: Axes,
