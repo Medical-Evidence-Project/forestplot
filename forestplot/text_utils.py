@@ -330,6 +330,7 @@ def prep_annote(
     annoteheaders: Optional[Union[Sequence[str], None]],
     varlabel: str,
     groupvar: str,
+    total_stats_col=None,
     **kwargs: Any,
 ) -> pd.core.frame.DataFrame:
     """Prepare the additional columns to be printed as annotations.
@@ -364,16 +365,26 @@ def prep_annote(
     for ix, annotation in enumerate(annote):
         # Get max len for padding
         _pad = _get_max_varlen(dataframe=dataframe, varlabel=annotation, extrapad=0)
+        if total_stats_col is not None:
+            _pad = _get_max_varlen(dataframe=dataframe[dataframe[total_stats_col]==0], varlabel=annotation, extrapad=0)
+        
+        
         if annoteheaders is not None:  # Check that max len exceeds header length
             _header = annoteheaders[ix]
             _pad = max(_pad, len(_header))
         lookup_annote_len[ix] = _pad
         for iy, row in dataframe.iterrows():  # Make individual formatted_annotations
+            if total_stats_col is not None:
+                if row[total_stats_col]==1:
+                    dataframe.loc[iy, f"formatted_{annotation}"] = ""
+                    continue
             _annotation = str(row[annotation]).ljust(_pad)
             dataframe.loc[iy, f"formatted_{annotation}"] = _annotation
 
     # get max length for variables
     pad = _get_max_varlen(dataframe=dataframe, varlabel=varlabel, extrapad=0)
+    if total_stats_col is not None:
+        pad = _get_max_varlen(dataframe=dataframe[dataframe[total_stats_col]==0], varlabel=varlabel, extrapad=0)
 
     if groupvar is not None:
         groups = [gr.lower() for gr in dataframe[groupvar].unique()]
@@ -382,6 +393,10 @@ def prep_annote(
 
     for ix, row in dataframe.iterrows():
         yticklabel = row[varlabel]
+        if total_stats_col is not None:
+            if row[total_stats_col] == 1:
+                dataframe.loc[ix, "yticklabel"] = yticklabel
+                continue
         if yticklabel.lower().strip() in groups:
             dataframe.loc[ix, "yticklabel"] = yticklabel
         else:
@@ -473,6 +488,7 @@ def make_tableheaders(
     annoteheaders: Optional[Union[Sequence[str], None]],
     rightannote: Optional[Union[Sequence[str], None]],
     right_annoteheaders: Optional[Union[Sequence[str], None]],
+    total_stats_col=None,
     **kwargs: Any,
 ) -> pd.core.frame.DataFrame:
     """Make the table headers from 'annoteheaders' and 'right_annoteheaders' as a row in the dataframe.
@@ -517,6 +533,8 @@ def make_tableheaders(
     dataframe = insert_empty_row(dataframe)
 
     pad = _get_max_varlen(dataframe=dataframe, varlabel=varlabel, extrapad=0)
+    if total_stats_col is not None:
+        pad = _get_max_varlen(dataframe=dataframe[dataframe[total_stats_col]==0], varlabel=varlabel, extrapad=0)
     left_headers = variable_header.ljust(pad)
     dataframe.loc[0, "yticklabel"] = left_headers
     if annoteheaders is not None:

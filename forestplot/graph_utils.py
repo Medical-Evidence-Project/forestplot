@@ -67,7 +67,7 @@ def determine_marker_size(weight):
     return np.power(2+0.125*weight,2)
 
 def draw_est_markers(
-    dataframe: pd.core.frame.DataFrame, estimate: str, yticklabel: str, proportional_size: bool, ax: Axes, **kwargs: Any
+    dataframe: pd.core.frame.DataFrame, estimate: str, yticklabel: str,  ax: Axes, weight_col=None, total_col=None, **kwargs: Any
 ) -> Axes:
     """
     Draws the markers of the estimates using the Matplotlib plt.scatter API.
@@ -84,8 +84,10 @@ def draw_est_markers(
             Name of column in intermediate dataframe containing the formatted yticklabels.
     ax (Matplotlib Axes)
             Axes to operate on.
-    proportional_size (bool)
-            If true, specify marker size to be proportional to the weight of the study.
+    weight_col (str)
+           If specified, marker size will be drawn proportionally to the weight of the study.
+    total_col (str)
+            The column containing the indicator for whether a row is a subtotal row. If it is, a subtotal row, set the markersize to 0 despite the weight being 100.
 
     Returns
     -------
@@ -97,11 +99,13 @@ def draw_est_markers(
     markeralpha = kwargs.get("markeralpha", 0.8)
     
     # 250715: draw marker sizes proportionally to study weights
-    if proportional_size:
+    if weight_col!=None:
         if not pd.isnull(dataframe[estimate]).all():
-            dataframe["markersize"] = determine_marker_size(dataframe["Weight"])
+            dataframe["markersize"] = determine_marker_size(dataframe[weight_col])
+            if total_col!=None:
+                dataframe.loc[dataframe[total_col]==1,"markersize"]=0
             markersize = "markersize"
-    if not proportional_size:
+    if weight_col==None:
         markersize = kwargs.get("markersize", 40)
         
         
@@ -128,10 +132,10 @@ def draw_total_diamond(
     **kwargs: Any
 ) -> Axes:
     height = 0.8 # total height of the diamond from top to bottom
-    print(height)
+    # print(height)
     for ii,row in dataframe.iterrows():
         if row[total_col]==1:
-            print(f"Row {ii} is total!")
+            # print(f"Row {ii} is total!")
             ci_low = row[ll]
             ci_high = row[hl]
             val = row[estimate]

@@ -81,9 +81,9 @@ def forestplot(
     preprocess: bool = True,
     table: bool = False,
     ax: Optional[Axes] = None,
-    proportional_marker_size: bool = False,
-    contains_total: bool = False,
+    weight_col = None,
     total_col = None,
+    total_stats_col = None,
     **kwargs: Any,
 ) -> Axes:
     """
@@ -156,10 +156,12 @@ def forestplot(
             If True, in addition to the Matplotlib Axes object, returns the intermediate dataframe
             created from preprocess_dataframe().
             A tuple of (preprocessed_dataframe, Ax) will be returned.
-    proportional_marker_size (bool)
-        Whether to draw the marker size proportionally to the weight of the study.
+    weight_col (str)
+        Default is None. If specified, marker size will be proportaional to the weight of the study.
     total_col (str)
         Default is None. If specified, it should be the name of the column indicating which row is subtotal. The values in the column should be 0 (not a subtotal), or 1 (a subtotal row). A horizontal diamond will be drawn for subtotal rows rather than square&whiskers.
+    total_stats_col (str)
+        Default is None. If specified, it should be the name of the column indicating which row contains the stats info of the subtotal. The values in the column should be 0 (not such a row), or 1 (is such a row). In such a row, the stats info should be specified in the varlabel column using complete descriptions like "Test for overall effect: Z = 3.02 (P = 0.003)", "Heterogeneity: Tau² (DLb) = 0.00; Chi² = 2.86, df = 3 (P = 0.41); I² = 0%". Can add as many such rows as needed.
 
     Returns
     -------
@@ -206,6 +208,7 @@ def forestplot(
             sortby=sortby,
             flush=flush,
             decimal_precision=decimal_precision,
+            total_stats_col=total_stats_col,
             **kwargs,
         )
     ax = _make_forestplot(
@@ -229,7 +232,7 @@ def forestplot(
         color_alt_rows=color_alt_rows,
         table=table,
         ax=ax,
-        proportional_marker_size=proportional_marker_size,
+        weight_col=weight_col,
         total_col=total_col,
         **kwargs,
     )
@@ -258,6 +261,7 @@ def _preprocess_dataframe(
     sortascend: bool = True,
     flush: bool = True,
     decimal_precision: int = 2,
+    total_stats_col: Optional[str] = None,
     **kwargs: Any,
 ) -> pd.core.frame.DataFrame:
     """
@@ -367,6 +371,7 @@ def _preprocess_dataframe(
             varlabel=varlabel,
             annote=annote,
             annoteheaders=annoteheaders,
+            total_stats_col=total_stats_col,
             **kwargs,
         )
     if rightannote is not None:
@@ -384,6 +389,7 @@ def _preprocess_dataframe(
         annoteheaders=annoteheaders,
         rightannote=rightannote,
         right_annoteheaders=right_annoteheaders,
+        total_stats_col=total_stats_col,
         **kwargs,
     )
     return reverse_dataframe(dataframe)  # since plotting starts from bottom
@@ -411,7 +417,7 @@ def _make_forestplot(
     ax: Axes,
     despine: bool = True,
     table: bool = False,
-    proportional_marker_size: bool=False,
+    weight_col = None,
     total_col = None,
     **kwargs: Any
 ) -> Axes:
@@ -463,8 +469,8 @@ def _make_forestplot(
         Whether to remove the top and right spines of the plot.
     table : bool, default=False
         Whether to draw a table-like structure on the plot.
-    proportional_marker_size: bool, default=False
-        Whether to draw the marker size proportionally to the weight of the study.
+    weight_col: str, default=None
+        If weight column is specified, the marker size will be drawn proportionally to weight.
     **kwargs : Any
         Additional keyword arguments for further customization.
 
@@ -487,7 +493,7 @@ def _make_forestplot(
     )
     # 250715: draw marker sizes proportionally to study weights
     draw_est_markers(
-        dataframe=dataframe, estimate=estimate, yticklabel=yticklabel, ax=ax, proportional_size=proportional_marker_size, **kwargs
+        dataframe=dataframe, estimate=estimate, yticklabel=yticklabel, ax=ax, weight_col=weight_col, total_col=total_col, **kwargs
     )
     if total_col is not None:
         draw_total_diamond(dataframe=dataframe, total_col=total_col, ax=ax, estimate=estimate, ll=ll, hl=hl,  **kwargs
