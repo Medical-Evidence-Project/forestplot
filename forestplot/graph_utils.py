@@ -443,6 +443,8 @@ def draw_ylabel1(ylabel: str, pad: float, ax: Axes, **kwargs: Any) -> Axes:
             size=ylabel1_size,
             fontweight=ylabel1_fontweight,
         )
+        pos = ax.get_position()
+        ax.set_position([pos.x0, pos.y0+10, pos.width, pos.height])  # shrink height by 10%
     return ax
 
 

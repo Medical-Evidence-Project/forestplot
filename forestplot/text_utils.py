@@ -167,6 +167,7 @@ def normalize_varlabels(
     dataframe: pd.core.frame.DataFrame,
     varlabel: str,
     capitalize: str = "capitalize",
+    total_stats_col = None,
 ) -> pd.core.frame.DataFrame:
     """
     Normalize variable labels to capitalize or title form.
@@ -181,22 +182,35 @@ def normalize_varlabels(
     capitalize (str)
             'capitalize' or 'title'
             See https://pandas.pydata.org/docs/reference/api/pandas.Series.str.capitalize.html
-
+    total_stats_col (str)
+            if such a column is specified, ignore the rows where total_stats_col is 1
     Returns
     -------
             pd.core.frame.DataFrame with the varlabel column normalized.
     """
     if capitalize:
-        if capitalize == "title":
-            dataframe[varlabel] = dataframe[varlabel].str.title()
-        elif capitalize == "capitalize":
-            dataframe[varlabel] = dataframe[varlabel].str.capitalize()
-        elif capitalize == "lower":
-            dataframe[varlabel] = dataframe[varlabel].str.lower()
-        elif capitalize == "upper":
-            dataframe[varlabel] = dataframe[varlabel].str.upper()
-        elif capitalize == "swapcase":
-            dataframe[varlabel] = dataframe[varlabel].str.swapcase()
+        if total_stats_col != None:
+            if capitalize == "title":
+                dataframe[dataframe[total_stats_col]==0][varlabel] = dataframe[dataframe[total_stats_col]==0][varlabel].str.title()
+            elif capitalize == "capitalize":
+                dataframe[dataframe[total_stats_col]==0][varlabel] = dataframe[dataframe[total_stats_col]==0][varlabel].str.capitalize()
+            elif capitalize == "lower":
+                dataframe[dataframe[total_stats_col]==0][varlabel] = dataframe[dataframe[total_stats_col]==0][varlabel].str.lower()
+            elif capitalize == "upper":
+                dataframe[dataframe[total_stats_col]==0][varlabel] = dataframe[dataframe[total_stats_col]==0][varlabel].str.upper()
+            elif capitalize == "swapcase":
+                dataframe[dataframe[total_stats_col]==0][varlabel] = dataframe[dataframe[total_stats_col]==0][varlabel].str.swapcase()
+        else:
+            if capitalize == "title":
+                dataframe[varlabel] = dataframe[varlabel].str.title()
+            elif capitalize == "capitalize":
+                dataframe[varlabel] = dataframe[varlabel].str.capitalize()
+            elif capitalize == "lower":
+                dataframe[varlabel] = dataframe[varlabel].str.lower()
+            elif capitalize == "upper":
+                dataframe[varlabel] = dataframe[varlabel].str.upper()
+            elif capitalize == "swapcase":
+                dataframe[varlabel] = dataframe[varlabel].str.swapcase()
     return dataframe
 
 

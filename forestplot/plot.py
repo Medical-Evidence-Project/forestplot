@@ -211,7 +211,7 @@ def forestplot(
             total_stats_col=total_stats_col,
             **kwargs,
         )
-    ax = _make_forestplot(
+    fig, ax = _make_forestplot(
         dataframe=_local_df,
         yticklabel="yticklabel",
         estimate=estimate,
@@ -236,7 +236,7 @@ def forestplot(
         total_col=total_col,
         **kwargs,
     )
-    return (_local_df, ax) if return_df else ax
+    return (_local_df, fig, ax) if return_df else (fig, ax)
 
 
 def _preprocess_dataframe(
@@ -334,11 +334,11 @@ def _preprocess_dataframe(
     )
     if groupvar is not None:  # Make groups
         dataframe = normalize_varlabels(
-            dataframe=dataframe, varlabel=groupvar, capitalize=capitalize
+            dataframe=dataframe, varlabel=groupvar, capitalize=capitalize, total_stats_col=total_stats_col
         )
         dataframe = insert_groups(dataframe=dataframe, groupvar=groupvar, varlabel=varlabel)
     dataframe = normalize_varlabels(
-        dataframe=dataframe, varlabel=varlabel, capitalize=capitalize
+        dataframe=dataframe, varlabel=varlabel, capitalize=capitalize, total_stats_col=total_stats_col
     )
     dataframe = indent_nongroupvar(dataframe=dataframe, varlabel=varlabel, groupvar=groupvar)
     if form_ci_report:
@@ -480,7 +480,7 @@ def _make_forestplot(
         The matplotlib Axes object with the forest plot.
     """
     if not ax:
-        _, ax = plt.subplots(figsize=figsize, facecolor="white")
+        fig, ax = plt.subplots(figsize=figsize, facecolor="white")
     ax = draw_ci(
         dataframe=dataframe,
         estimate=estimate,
@@ -562,4 +562,4 @@ def _make_forestplot(
     negative_padding = 0.5
     # ax.set_ylim(-0.5, ax.get_ylim()[1] - negative_padding) # this doesn't reflect the number of actually required rows
     ax.set_ylim(-0.5, dataframe.shape[0]) # 250713: added by Takua Liu
-    return ax
+    return fig, ax
