@@ -211,6 +211,7 @@ def forestplot(
             total_stats_col=total_stats_col,
             **kwargs,
         )
+
     fig, ax = _make_forestplot(
         dataframe=_local_df,
         yticklabel="yticklabel",
@@ -511,6 +512,7 @@ def _make_forestplot(
     pad = right_flush_yticklabels(
         dataframe=dataframe, yticklabel=yticklabel, flush=flush, ax=ax, **kwargs
     )
+    draw_ylabel1(ylabel=ylabel, pad=pad, ax=ax, **kwargs)
     if rightannote is None:
         ax, righttext_width = draw_pval_right(
             dataframe=dataframe,
@@ -531,10 +533,10 @@ def _make_forestplot(
             ax=ax,
             **kwargs,
         )
-
-    draw_ylabel1(ylabel=ylabel, pad=pad, ax=ax, **kwargs)
+    
     remove_ticks(ax)
     format_grouplabels(dataframe=dataframe, groupvar=groupvar, ax=ax, **kwargs)
+    
     format_tableheader(
         annoteheaders=annoteheaders, right_annoteheaders=right_annoteheaders, ax=ax, **kwargs
     )
