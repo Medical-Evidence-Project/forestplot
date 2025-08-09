@@ -49,15 +49,17 @@ def draw_ci(
     if ll is not None:
         lw = kwargs.get("lw", 1.4)
         linecolor = kwargs.get("linecolor", ".6")
+        # 250808: originally, the y is specified as dataframe[yticklabel]. This works until there are duplicate values in the yticklabel column. In this case, pyplot skips the duplicated values without yielding any warning. This is very bad practice. When plotting, always specify numerical x-y coordinates!!!
         ax.errorbar(
             x=dataframe[estimate],
-            y=dataframe[yticklabel],
+            y=range(len(dataframe)),
             xerr=[dataframe[estimate] - dataframe[ll], dataframe[hl] - dataframe[estimate]],
             ecolor=linecolor,
             elinewidth=lw,
             ls="none",
             zorder=0,
         )
+        
     if logscale:
         ax.set_xscale("log", base=10)
     return ax
@@ -112,7 +114,7 @@ def draw_est_markers(
     # 250714: some dataframes are empty. In such cases, we still draw an empty graph. But of course we don't need markers on an empty graph!
     if not pd.isnull(dataframe[estimate]).all():
         ax.scatter(
-            y=yticklabel,
+            y=range(len(dataframe)),
             x=estimate,
             data=dataframe,
             marker=marker,
