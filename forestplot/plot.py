@@ -84,6 +84,7 @@ def forestplot(
     weight_col = None,
     total_col = None,
     total_stats_col = None,
+    flag_col = "",
     **kwargs: Any,
 ) -> Axes:
     """
@@ -162,7 +163,8 @@ def forestplot(
         Default is None. If specified, it should be the name of the column indicating which row is subtotal. The values in the column should be 0 (not a subtotal), or 1 (a subtotal row). A horizontal diamond will be drawn for subtotal rows rather than square&whiskers.
     total_stats_col (str)
         Default is None. If specified, it should be the name of the column indicating which row contains the stats info of the subtotal. The values in the column should be 0 (not such a row), or 1 (is such a row). In such a row, the stats info should be specified in the varlabel column using complete descriptions like "Test for overall effect: Z = 3.02 (P = 0.003)", "Heterogeneity: Tau² (DLb) = 0.00; Chi² = 2.86, df = 3 (P = 0.41); I² = 0%". Can add as many such rows as needed.
-
+    flag_col (str)
+        the column based on which we color the yticklables to flag suspicious rows.
     Returns
     -------
             Matplotlib Axes object.
@@ -211,7 +213,6 @@ def forestplot(
             total_stats_col=total_stats_col,
             **kwargs,
         )
-
     fig, ax = _make_forestplot(
         dataframe=_local_df,
         yticklabel="yticklabel",
@@ -235,6 +236,7 @@ def forestplot(
         ax=ax,
         weight_col=weight_col,
         total_col=total_col,
+        flag_col=flag_col,
         **kwargs,
     )
     return (_local_df, fig, ax) if return_df else (fig, ax)
@@ -420,6 +422,7 @@ def _make_forestplot(
     table: bool = False,
     weight_col = None,
     total_col = None,
+    flag_col = "",
     **kwargs: Any
 ) -> Axes:
     """
@@ -510,7 +513,7 @@ def _make_forestplot(
         **kwargs,
     )
     pad = right_flush_yticklabels(
-        dataframe=dataframe, yticklabel=yticklabel, flush=flush, ax=ax, **kwargs
+        dataframe=dataframe, yticklabel=yticklabel, flush=flush, ax=ax, flag_col=flag_col, **kwargs
     )
     draw_ylabel1(ylabel=ylabel, pad=pad, ax=ax, **kwargs)
     if rightannote is None:

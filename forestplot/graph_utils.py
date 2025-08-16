@@ -189,7 +189,7 @@ def draw_ref_xline(
 
 
 def right_flush_yticklabels(
-    dataframe: pd.core.frame.DataFrame, yticklabel: str, flush: bool, ax: Axes, **kwargs: Any
+    dataframe: pd.core.frame.DataFrame, yticklabel: str, flush: bool, ax: Axes, flag_col: str, **kwargs: Any
 ) -> float:
     """Flushes the formatted ytickers to the left. Also returns the amount of max padding in the window width.
 
@@ -230,6 +230,14 @@ def right_flush_yticklabels(
         ax.set_yticklabels(
             dataframe[yticklabel], fontfamily=fontfamily, fontsize=fontsize, ha="right"
         )
+    if len(flag_col)>0 and (flag_col in dataframe.columns):
+        print(dataframe[flag_col])
+        for label, fg in zip(ax.get_yticklabels(), dataframe[flag_col]):
+            if pd.isnull(fg):
+                continue
+            if fg>0:
+                print(f"Should set the color of {label}")
+                label.set_color("red")
     # nlast = len(ax.get_yticklabels())
     # print(nlast)
     # print(ax.get_yticklabels())
