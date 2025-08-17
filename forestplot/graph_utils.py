@@ -231,7 +231,7 @@ def right_flush_yticklabels(
             dataframe[yticklabel], fontfamily=fontfamily, fontsize=fontsize, ha="right"
         )
     if len(flag_col)>0 and (flag_col in dataframe.columns):
-        print(dataframe[flag_col])
+        # print(dataframe[flag_col])
         for label, fg in zip(ax.get_yticklabels(), dataframe[flag_col]):
             if pd.isnull(fg):
                 continue
