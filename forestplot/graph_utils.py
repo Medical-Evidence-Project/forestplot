@@ -8,8 +8,6 @@ import pandas as pd
 import numpy as np
 from matplotlib.pyplot import Axes
 from matplotlib.patches import Polygon
-import matplotlib
-matplotlib.use('Agg')
 
 warnings.filterwarnings("ignore")
 
