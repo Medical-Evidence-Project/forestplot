@@ -243,7 +243,7 @@ def right_flush_yticklabels(
             if pd.isnull(fg):
                 continue
             if fg>0:
-                print(f"Should set the color of {label}")
+                # print(f"Should set the color of {label}")
                 label.set_color("red")
     # nlast = len(ax.get_yticklabels())
     # print(nlast)
