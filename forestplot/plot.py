@@ -495,7 +495,6 @@ def _make_forestplot(
         ax=ax,
         **kwargs,
     )
-    
     # 250715: draw marker sizes proportionally to study weights
     draw_est_markers(
         dataframe=dataframe, estimate=estimate, yticklabel=yticklabel, ax=ax, weight_col=weight_col, total_col=total_col, **kwargs
