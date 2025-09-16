@@ -443,21 +443,21 @@ def draw_yticklabel2(
 
 # utility for draw_ylabel1()
 def shorten_label(txt, orig_txt, attempt=0):
-        if len(txt.split(":"))>1:
-            # have both analysis group and subgroup info
-            # in this case, keep only subgroup info
-            return txt.split(":")[-1]
-        if (len(txt.split(":"))==1 and len(orig_txt.split(":"))>1) or len(orig_txt.split(":"))==1:
-            # originally have both analysis group and subgroup info, tried keeping only the subgroup info, but still too long
-            # or, there is only analysis group to begin with
-            new_txt = ""
-            for tt in orig_txt.split(":"):
-                new_txt += " ".join(tt.split(" ")[:max(3,15-attempt)]) + " (...) "
-            txt = new_txt
-        if attempt > 10:
-            # unlikely, but if this happens, we don't care about what's being written, just reduce the length!
-            txt = orig_txt[:(max(20, len(orig_txt)-attempt))] + "(...)"
-        return txt
+    if len(txt.split(":"))>1:
+        # have both analysis group and subgroup info
+        # in this case, keep only subgroup info
+        return txt.split(":")[-1]
+    if (len(txt.split(":"))==1 and len(orig_txt.split(":"))>1) or len(orig_txt.split(":"))==1:
+        # originally have both analysis group and subgroup info, tried keeping only the subgroup info, but still too long
+        # or, there is only analysis group to begin with
+        new_txt = ""
+        for tt in orig_txt.split(":"):
+            new_txt += " ".join(tt.split(" ")[:max(3,15-attempt)]) + " (...) "
+        txt = new_txt
+    if attempt > 10:
+        # unlikely, but if this happens, we don't care about what's being written, just reduce the length!
+        txt = orig_txt[:(max(20, len(orig_txt)-attempt))] + "(...)"
+    return txt
 
 def draw_ylabel1(ylabel: str, pad: float, ax: Axes, **kwargs: Any) -> Axes:
     """
